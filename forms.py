@@ -15,10 +15,6 @@ st.set_page_config(
 # Carregar banco de cidades
 # ======================================
 
-import os
-
-st.write(os.listdir())
-
 cidades = pd.read_excel(
     "cidades.xlsx"
 )
