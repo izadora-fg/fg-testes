@@ -12,11 +12,15 @@ st.set_page_config(
 
 
 # ======================================
-# Carregar banco de cidades
+# Carregar banco de cidades e engenheiros
 # ======================================
 
 cidades = pd.read_excel(
     "cidades.xlsx"
+)
+
+engenheiros = pd.read_excel(
+    "engenheiros.xlsx"
 )
 
 
@@ -45,7 +49,7 @@ if st.session_state.pagina == "cabecalho":
 
     st.title("Organograma da Obra")
 
-    st.subheader("Cabeçalho")
+    st.subheader("Informações Gerais")
 
     data = st.date_input(
         "Data do preenchimento"
@@ -61,7 +65,6 @@ if st.session_state.pagina == "cabecalho":
         estados
     )
 
-
     cidades_disponiveis = cidades[
         cidades["UF"] == estado
     ]["Cidade"].dropna()
@@ -72,14 +75,15 @@ if st.session_state.pagina == "cabecalho":
         sorted(cidades_disponiveis)
     )
 
+    responsavel = st.selectbox(
+    "Responsável da obra",
+    sorted(engenheiros["responsaveis"].dropna())
+)
 
-    responsavel = st.text_input(
-        "Responsável da obra"
-    )
-
-    funcao = st.text_input(
-        "Cargo do responsável"
-    )
+    cargo = engenheiros.loc[
+    engenheiros["responsaveis"] == responsavel,
+    "cargo"
+    ].iloc[0]
 
     st.divider()
 
@@ -397,7 +401,6 @@ elif st.session_state.pagina == "contratacoes":
 
     st.divider()
 
-
     col1, col2 = st.columns(2)
 
     with col1:
@@ -408,3 +411,5 @@ elif st.session_state.pagina == "contratacoes":
     with col2:
         if st.button("Finalizar"):
             st.success("Formulário preenchido com sucesso!")
+
+            
