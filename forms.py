@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 # ======================================
 # Configuração da página
@@ -9,39 +10,27 @@ st.set_page_config(
     layout="centered"
 )
 
+
 # ======================================
-# Banco de estados
+# Carregar banco de cidades
 # ======================================
 
-estados = [
-    "Acre",
-    "Alagoas",
-    "Amapá",
-    "Amazonas",
-    "Bahia",
-    "Ceará",
-    "Distrito Federal",
-    "Espírito Santo",
-    "Goiás",
-    "Maranhão",
-    "Mato Grosso",
-    "Mato Grosso do Sul",
-    "Minas Gerais",
-    "Pará",
-    "Paraíba",
-    "Paraná",
-    "Pernambuco",
-    "Piauí",
-    "Rio de Janeiro",
-    "Rio Grande do Norte",
-    "Rio Grande do Sul",
-    "Rondônia",
-    "Roraima",
-    "Santa Catarina",
-    "São Paulo",
-    "Sergipe",
-    "Tocantins"
-]
+import os
+
+st.write(os.listdir())
+
+cidades = pd.read_excel(
+    "cidades.xlsx"
+)
+
+
+# ======================================
+# Preparar estados
+# ======================================
+
+estados = sorted(
+    cidades["UF"].dropna().unique()
+)
 
 
 # ======================================
@@ -70,14 +59,23 @@ if st.session_state.pagina == "cabecalho":
         "Código da obra"
     )
 
+
     estado = st.selectbox(
         "Estado",
         estados
     )
 
-    cidade = st.text_input(
-        "Cidade"
+
+    cidades_disponiveis = cidades[
+        cidades["UF"] == estado
+    ]["Cidade"].dropna()
+
+
+    cidade = st.selectbox(
+        "Cidade",
+        sorted(cidades_disponiveis)
     )
+
 
     responsavel = st.text_input(
         "Responsável da obra"
