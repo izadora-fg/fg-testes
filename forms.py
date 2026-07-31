@@ -99,36 +99,36 @@ if st.session_state.pagina == "cabecalho":
 
     st.divider()
 
-if st.button("Próxima seção ➜"):
+    if st.button("Próxima seção ➜"):
 
-    erros = []
+        erros = []
 
-    if obra.strip() == "":
-        erros.append("• Informe o código da obra.")
+        if obra.strip() == "":
+            erros.append("Informe o código da obra.")
 
-    if estado == None:
-        erros.append("• Selecione o estado.")
+        if estado == None:
+            erros.append("Selecione o estado.")
 
-    if cidade == None:
-        erros.append("• Selecione a cidade.")
+        if cidade == None:
+            erros.append("Selecione a cidade.")
 
-    if responsavel == None:
-        erros.append("• Selecione o responsável da obra.")
+        if responsavel == None:
+            erros.append("Selecione o responsável da obra.")
 
-    if erros:
+        if erros:
 
-        mensagem = "Preencha os campos abaixo antes de continuar:\n\n"
+            mensagem = "Preencha os campos abaixo antes de continuar:\n\n"
 
-        for erro in erros:
-            mensagem += f"- {erro}\n"
+            for erro in erros:
+                mensagem += f"- {erro}\n"
 
-        st.warning(mensagem)
+            st.warning(mensagem)
 
-    else:
+        else:
 
-        st.session_state.pagina = "equipes"
+            st.session_state.pagina = "equipes"
 
-        st.rerun()
+            st.rerun()
 
 # ======================================
 # EQUIPES
@@ -144,7 +144,8 @@ elif st.session_state.pagina == "equipes":
         "Quantas equipes existem?",
         min_value=1,
         step=1,
-        value=1
+        value=1,
+        key="quantidade_equipes"
     )
 
     st.divider()
@@ -192,13 +193,48 @@ elif st.session_state.pagina == "equipes":
 
     with col1:
 
-        if st.button("⬅ Voltar",key="bt_vt_eq"):
+        if st.button("⬅ Voltar", key="bt_vt_eq"):
             st.session_state.pagina = "cabecalho"
             st.rerun()
 
     with col2:
 
-        if st.button("Próxima seção ➜",key="bt_px_eq"):
+        avancar = st.button("Próxima seção ➜", key="bt_px_eq")
+
+    if avancar:
+
+        erros = []
+
+        for i in range(quantidade_equipes):
+
+            if st.session_state[f"funcao_{i}"].strip() == "":
+                erros.append(f"Informe a função da Equipe {i+1}.")
+
+            quantidade_funcionarios = st.session_state[f"qtd_func_{i}"]
+
+            for funcionario in range(quantidade_funcionarios):
+
+                if st.session_state[f"cargo_{i}_{funcionario}"].strip() == "":
+                    erros.append(
+                        f"Informe o cargo do Funcionário {funcionario+1} da Equipe {i+1}."
+                    )
+
+                if st.session_state[f"nome_{i}_{funcionario}"].strip() == "":
+                    erros.append(
+                        f"Informe o nome do Funcionário {funcionario+1} da Equipe {i+1}."
+                    )
+
+        if erros:
+
+            mensagem = "Preencha os campos abaixo antes de continuar:\n\n"
+
+            for erro in erros:
+                mensagem += f"- {erro}\n"
+
+            st.warning(mensagem)
+
+        else:
+
             st.session_state.pagina = "veiculos"
             st.rerun()
 
