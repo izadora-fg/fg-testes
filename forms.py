@@ -40,7 +40,6 @@ estados = sorted(
 if "pagina" not in st.session_state:
     st.session_state.pagina = "cabecalho"
 
-
 # ======================================
 # CABEÇALHO
 # ======================================
@@ -52,17 +51,20 @@ if st.session_state.pagina == "cabecalho":
     st.subheader("Informações Gerais")
 
     data = st.date_input(
-        "Data do preenchimento"
+        "Data do preenchimento",
+        key = "data"
     )
 
     obra = st.text_input(
-        "Código da obra"
+        "Código da obra",
+        key = "obra"
     )
-
 
     estado = st.selectbox(
         "Estado",
-        estados
+        estados,
+        index=None,
+        key = "estado"
     )
 
     cidades_disponiveis = cidades[
@@ -72,26 +74,63 @@ if st.session_state.pagina == "cabecalho":
 
     cidade = st.selectbox(
         "Cidade",
-        sorted(cidades_disponiveis)
+        sorted(cidades_disponiveis),
+        index=None,
+        key = "cidade"
     )
 
     responsavel = st.selectbox(
     "Responsável da obra",
-    sorted(engenheiros["responsaveis"].dropna())
+    sorted(engenheiros["responsaveis"].dropna()),
+    index=None,
+    key = "responsavel"
 )
 
-    cargo = engenheiros.loc[
-    engenheiros["responsaveis"] == responsavel,
-    "cargo"
-    ].iloc[0]
+    if responsavel is not None:
+
+        cargo = engenheiros.loc[
+            engenheiros["responsaveis"] == responsavel,
+            "cargo"
+        ].iloc[0]
+
+    else:
+
+        cargo = ""
 
     st.divider()
 
-    if st.button("Próxima seção ➜"):
+if st.button("Próxima seção ➜"):
+
+    erros = []
+
+    if obra.strip() == "":
+        erros.append("• Informe o código da obra.")
+
+    if estado == None:
+        erros.append("• Selecione o estado.")
+
+    if cidade == None:
+        erros.append("• Selecione a cidade.")
+
+    if responsavel == None:
+        erros.append("• Selecione o responsável da obra.")
+
+    if erros:
+
+        mensagem = "Preencha os campos abaixo antes de continuar:\n\n"
+
+        for erro in erros:
+            mensagem += f"- {erro}\n"
+
+        st.warning(mensagem)
+
+    else:
 
         st.session_state.pagina = "equipes"
 
         st.rerun()
+
+
 
 # ======================================
 # EQUIPES
@@ -169,7 +208,7 @@ elif st.session_state.pagina == "veiculos":
 
     st.title("Seção 2 - Veículos Leves")
 
-    st.write("Informe os veículos leves liberados para a obra.")
+    st.write("Informe os veículos leves na obra.")
 
     quantidade_veiculos = st.number_input(
         "Quantos veículos leves existem?",
@@ -283,7 +322,7 @@ elif st.session_state.pagina == "veiculos_pesados":
 
             with col2:
                 proprietario = st.text_input(
-                    "Proprietário",
+                    "Empresa proprietária",
                     key=f"proprietario_pesado_{i}"
                 )
 
