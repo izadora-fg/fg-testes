@@ -130,8 +130,6 @@ if st.button("Próxima seção ➜"):
 
         st.rerun()
 
-
-
 # ======================================
 # EQUIPES
 # ======================================
@@ -194,13 +192,13 @@ elif st.session_state.pagina == "equipes":
 
     with col1:
 
-        if st.button("⬅ Voltar"):
+        if st.button("⬅ Voltar",key="bt_vt_eq"):
             st.session_state.pagina = "cabecalho"
             st.rerun()
 
     with col2:
 
-        if st.button("Próxima seção ➜"):
+        if st.button("Próxima seção ➜",key="bt_px_eq"):
             st.session_state.pagina = "veiculos"
             st.rerun()
 
