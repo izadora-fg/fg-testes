@@ -4,6 +4,52 @@ from openpyxl import load_workbook
 
 import streamlit as st
 import pandas as pd
+import requests
+import base64
+import os
+
+def enviar_github(nome_arquivo):
+
+    token = st.secrets["GITHUB_TOKEN"]
+
+    usuario = "izadorapiske"
+    repositorio = "fg-testes"
+
+    caminho = f"obras/{nome_arquivo}"
+
+    with open(nome_arquivo, "rb") as f:
+        conteudo = base64.b64encode(f.read()).decode()
+
+    url = f"https://api.github.com/repos/{usuario}/{repositorio}/contents/{caminho}"
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    # verifica se o arquivo já existe
+    resposta = requests.get(url, headers=headers)
+
+    sha = None
+
+    if resposta.status_code == 200:
+        sha = resposta.json()["sha"]
+
+    dados = {
+        "message": f"Atualiza {nome_arquivo}",
+        "content": conteudo
+    }
+
+    if sha:
+        dados["sha"] = sha
+
+    resposta = requests.put(
+        url,
+        headers=headers,
+        json=dados
+    )
+
+    return resposta.status_code in (200, 201)
 
 hoje = datetime.now(ZoneInfo("America/Sao_Paulo")).date()
 
@@ -543,5 +589,13 @@ elif st.session_state.pagina == "contratacoes":
 
             nome_arquivo = f'{st.session_state["dados_obra"]}.xlsx'
             wb.save(nome_arquivo)
+
+            sucesso = enviar_github(nome_arquivo)
+
+            if sucesso:
+                st.success("Arquivo enviado para o GitHub!")
+                os.remove(nome_arquivo)
+            else:
+                st.error("Erro ao enviar para o GitHub.")
 
             st.success("Formulário preenchido com sucesso!")
