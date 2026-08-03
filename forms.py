@@ -49,6 +49,13 @@ def enviar_github(nome_arquivo):
         json=dados
     )
 
+    if resposta.status_code not in (200, 201):
+        st.error(f"Código: {resposta.status_code}")
+        st.write(resposta.text)
+        return False
+
+    return True
+
     return resposta.status_code in (200, 201)
 
 hoje = datetime.now(ZoneInfo("America/Sao_Paulo")).date()
