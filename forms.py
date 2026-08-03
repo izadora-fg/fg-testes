@@ -12,7 +12,7 @@ def enviar_github(nome_arquivo):
 
     token = st.secrets["GITHUB_TOKEN"]
 
-    usuario = "izadorapiske"
+    usuario = "izadora-fg"
     repositorio = "fg-testes"
 
     caminho = f"obras/{nome_arquivo}"
