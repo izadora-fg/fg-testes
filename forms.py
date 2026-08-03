@@ -103,6 +103,10 @@ if "pagina" not in st.session_state:
 # CABEÇALHO
 # ======================================
 
+if st.button("Limpar sessão"):
+    st.session_state.clear()
+    st.rerun()
+
 if st.session_state.pagina == "cabecalho":
 
     st.title("Organograma da Obra")
