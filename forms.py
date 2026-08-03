@@ -594,6 +594,76 @@ elif st.session_state.pagina == "contratacoes":
             ws["F4"] = st.session_state["dados_responsavel"]
             ws["F5"] = st.session_state["dados_cargo"]
 
+            # ======================================
+            # EQUIPES
+            # ======================================
+
+            linha = 9
+
+            ws["E7"] = st.session_state["quantidade_equipes"]
+
+            for i in range(st.session_state["quantidade_equipes"]):
+
+                # função da equipe
+                ws[f"C{linha}"] = st.session_state[f"funcao_{i}"]
+
+                linha += 1
+
+                quantidade_funcionarios = st.session_state[f"qtd_func_{i}"]
+
+                for funcionario in range(quantidade_funcionarios):
+
+                    ws[f"C{linha}"] = st.session_state[f"cargo_{i}_{funcionario}"]
+                    ws[f"E{linha}"] = st.session_state[f"nome_{i}_{funcionario}"]
+
+                    linha += 1
+
+
+            # ======================================
+            # VEÍCULOS LEVES
+            # ======================================
+
+            # pula uma linha após equipes
+            linha += 1
+
+            ws[f"E{linha}"] = st.session_state["quantidade_veiculos_leves"]
+
+            linha += 3  # pula título + cabeçalho da tabela
+
+
+            for i in range(st.session_state["quantidade_veiculos_leves"]):
+
+                ws[f"C{linha}"] = st.session_state[f"tipo_leve_{i}"]
+                ws[f"D{linha}"] = st.session_state[f"placa_leve_{i}"]
+                ws[f"E{linha}"] = st.session_state[f"responsavel_leve_{i}"]
+                ws[f"F{linha}"] = st.session_state[f"cargo_setor_leve_{i}"]
+                ws[f"G{linha}"] = st.session_state[f"obs_leve_{i}"]
+                ws[f"I{linha}"] = st.session_state[f"liberado_leve_{i}"]
+
+                linha += 1
+
+
+            # ======================================
+            # VEÍCULOS PESADOS
+            # ======================================
+
+            linha += 1
+
+            ws[f"E{linha}"] = st.session_state["quantidade_veiculos_pesados"]
+
+            linha += 3  # pula título + cabeçalho da tabela
+
+
+            for i in range(st.session_state["quantidade_veiculos_pesados"]):
+
+                ws[f"C{linha}"] = st.session_state[f"tipo_pesado_{i}"]
+                ws[f"D{linha}"] = st.session_state[f"placa_pesado_{i}"]
+                ws[f"E{linha}"] = st.session_state[f"responsavel_pesado_{i}"]
+                ws[f"F{linha}"] = st.session_state[f"proprietario_pesado_{i}"]
+                ws[f"G{linha}"] = st.session_state[f"obs_pesado_{i}"]
+
+                linha += 1
+
             nome_arquivo = f'{st.session_state["dados_obra"]}.xlsx'
             wb.save(nome_arquivo)
 
