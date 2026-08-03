@@ -1,5 +1,10 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 import streamlit as st
 import pandas as pd
+
+hoje = datetime.now(ZoneInfo("America/Sao_Paulo")).date()
 
 # ======================================
 # Configuração da página
@@ -52,8 +57,10 @@ if st.session_state.pagina == "cabecalho":
 
     data = st.date_input(
         "Data do preenchimento",
-        key = "data"
-    )
+        value=hoje,
+        key="data"
+)
+
 
     obra = st.text_input(
         "Código da obra",
@@ -142,9 +149,9 @@ elif st.session_state.pagina == "equipes":
 
     quantidade_equipes = st.number_input(
         "Quantas equipes existem?",
-        min_value=1,
+        min_value=0,
         step=1,
-        value=1,
+        value=0,
         key="quantidade_equipes"
     )
 
@@ -307,7 +314,40 @@ elif st.session_state.pagina == "veiculos":
             st.rerun()
 
     with col2:
-        if st.button("Próxima seção ➜"):
+        avancar = st.button(
+            "Próxima seção ➜",
+            key="bt_px_veiculos"
+    )
+
+    if avancar:
+
+        erros = []
+
+        for i in range(quantidade_veiculos):
+
+            if st.session_state[f"tipo_leve_{i}"].strip() == "":
+                erros.append(f"Informe o tipo do Veículo {i+1}.")
+
+            if st.session_state[f"placa_leve_{i}"].strip() == "":
+                erros.append(f"Informe a placa do Veículo {i+1}.")
+
+            if st.session_state[f"responsavel_leve_{i}"].strip() == "":
+                erros.append(f"Informe o responsável do Veículo {i+1}.")
+
+            if st.session_state[f"cargo_setor_leve_{i}"].strip() == "":
+                erros.append(f"Informe o cargo/setor do Veículo {i+1}.")
+
+        if erros:
+
+            mensagem = "Preencha os campos abaixo antes de continuar:\n\n"
+
+            for erro in erros:
+                mensagem += f"- {erro}\n"
+
+            st.warning(mensagem)
+
+        else:
+
             st.session_state.pagina = "veiculos_pesados"
             st.rerun()
 
