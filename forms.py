@@ -1,5 +1,6 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from openpyxl import load_workbook
 
 import streamlit as st
 import pandas as pd
@@ -523,6 +524,19 @@ elif st.session_state.pagina == "contratacoes":
 
     with col2:
         if st.button("Finalizar"):
-            st.success("Formulário preenchido com sucesso!")
+
+            wb = load_workbook("organograma_modelo.xlsx")
+            ws = wb.active
+
+            ws["G3"] = st.session_state["obra"]
+            ws["E3"] = st.session_state["data"]
+            ws["I3"] = st.session_state["cidade"]
+            ws["F4"] = st.session_state["responsavel"]
+            ws["F5"] = cargo
+
+            nome_arquivo = f'{st.session_state["obra"]}.xlsx'
+            wb.save(nome_arquivo)
+
+            st.success("Formulário preenchido com sucesso! Modelo carregado")
 
             
