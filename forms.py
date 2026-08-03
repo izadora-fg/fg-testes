@@ -585,134 +585,143 @@ elif st.session_state.pagina == "contratacoes":
     with col2:
         if st.button("Finalizar"):
 
-        # ======================================
-        # EQUIPES
-        # ======================================
+            wb = load_workbook("organograma_modelo.xlsx")
+            ws = wb.active
 
-        linha = 9
+            ws["G3"] = st.session_state["dados_obra"]
+            ws["E3"] = st.session_state["dados_data"]
+            ws["I3"] = st.session_state["dados_cidade"]
+            ws["F4"] = st.session_state["dados_responsavel"]
+            ws["F5"] = st.session_state["dados_cargo"]
 
-        quantidade_equipes = st.session_state.get("quantidade_equipes", 0)
+            # ======================================
+            # EQUIPES
+            # ======================================
 
-        ws["E7"] = quantidade_equipes
+            linha = 9
 
-        for i in range(quantidade_equipes):
+            quantidade_equipes = st.session_state.get("quantidade_equipes", 0)
 
-            ws[f"C{linha}"] = st.session_state.get(f"funcao_{i}", "")
+            ws["E7"] = quantidade_equipes
+
+            for i in range(quantidade_equipes):
+
+                ws[f"C{linha}"] = st.session_state.get(f"funcao_{i}", "")
+
+                linha += 1
+
+                quantidade_funcionarios = st.session_state.get(f"qtd_func_{i}", 0)
+
+                for funcionario in range(quantidade_funcionarios):
+
+                    ws[f"C{linha}"] = st.session_state.get(
+                        f"cargo_{i}_{funcionario}",
+                        ""
+                    )
+
+                    ws[f"E{linha}"] = st.session_state.get(
+                        f"nome_{i}_{funcionario}",
+                        ""
+                    )
+
+                    linha += 1
+
+
+            # ======================================
+            # VEÍCULOS LEVES
+            # ======================================
 
             linha += 1
 
-            quantidade_funcionarios = st.session_state.get(f"qtd_func_{i}", 0)
+            quantidade_veiculos_leves = st.session_state.get(
+                "quantidade_veiculos_leves",
+                0
+            )
 
-            for funcionario in range(quantidade_funcionarios):
+            ws[f"E{linha}"] = quantidade_veiculos_leves
+
+            linha += 3
+
+
+            for i in range(quantidade_veiculos_leves):
 
                 ws[f"C{linha}"] = st.session_state.get(
-                    f"cargo_{i}_{funcionario}",
+                    f"tipo_leve_{i}",
+                    ""
+                )
+
+                ws[f"D{linha}"] = st.session_state.get(
+                    f"placa_leve_{i}",
                     ""
                 )
 
                 ws[f"E{linha}"] = st.session_state.get(
-                    f"nome_{i}_{funcionario}",
+                    f"responsavel_leve_{i}",
+                    ""
+                )
+
+                ws[f"F{linha}"] = st.session_state.get(
+                    f"cargo_setor_leve_{i}",
+                    ""
+                )
+
+                ws[f"G{linha}"] = st.session_state.get(
+                    f"obs_leve_{i}",
+                    ""
+                )
+
+                ws[f"I{linha}"] = st.session_state.get(
+                    f"liberado_leve_{i}",
                     ""
                 )
 
                 linha += 1
 
 
-        # ======================================
-        # VEÍCULOS LEVES
-        # ======================================
-
-        linha += 1
-
-        quantidade_veiculos_leves = st.session_state.get(
-            "quantidade_veiculos_leves",
-            0
-        )
-
-        ws[f"E{linha}"] = quantidade_veiculos_leves
-
-        linha += 3
-
-
-        for i in range(quantidade_veiculos_leves):
-
-            ws[f"C{linha}"] = st.session_state.get(
-                f"tipo_leve_{i}",
-                ""
-            )
-
-            ws[f"D{linha}"] = st.session_state.get(
-                f"placa_leve_{i}",
-                ""
-            )
-
-            ws[f"E{linha}"] = st.session_state.get(
-                f"responsavel_leve_{i}",
-                ""
-            )
-
-            ws[f"F{linha}"] = st.session_state.get(
-                f"cargo_setor_leve_{i}",
-                ""
-            )
-
-            ws[f"G{linha}"] = st.session_state.get(
-                f"obs_leve_{i}",
-                ""
-            )
-
-            ws[f"I{linha}"] = st.session_state.get(
-                f"liberado_leve_{i}",
-                ""
-            )
+            # ======================================
+            # VEÍCULOS PESADOS
+            # ======================================
 
             linha += 1
 
-
-        # ======================================
-        # VEÍCULOS PESADOS
-        # ======================================
-
-        linha += 1
-
-        quantidade_veiculos_pesados = st.session_state.get(
-            "quantidade_veiculos_pesados",
-            0
-        )
-
-        ws[f"E{linha}"] = quantidade_veiculos_pesados
-
-        linha += 3
-
-
-        for i in range(quantidade_veiculos_pesados):
-
-            ws[f"C{linha}"] = st.session_state.get(
-                f"tipo_pesado_{i}",
-                ""
+            quantidade_veiculos_pesados = st.session_state.get(
+                "quantidade_veiculos_pesados",
+                0
             )
 
-            ws[f"D{linha}"] = st.session_state.get(
-                f"placa_pesado_{i}",
-                ""
-            )
+            ws[f"E{linha}"] = quantidade_veiculos_pesados
 
-            ws[f"E{linha}"] = st.session_state.get(
-                f"responsavel_pesado_{i}",
-                ""
-            )
+            linha += 3
 
-            ws[f"F{linha}"] = st.session_state.get(
-                f"proprietario_pesado_{i}",
-                ""
-            )
 
-            ws[f"G{linha}"] = st.session_state.get(
-                f"obs_pesado_{i}",
-                ""
-            )
+            for i in range(quantidade_veiculos_pesados):
 
-            linha += 1
+                ws[f"C{linha}"] = st.session_state.get(
+                    f"tipo_pesado_{i}",
+                    ""
+                )
+
+                ws[f"D{linha}"] = st.session_state.get(
+                    f"placa_pesado_{i}",
+                    ""
+                )
+
+                ws[f"E{linha}"] = st.session_state.get(
+                    f"responsavel_pesado_{i}",
+                    ""
+                )
+
+                ws[f"F{linha}"] = st.session_state.get(
+                    f"proprietario_pesado_{i}",
+                    ""
+                )
+
+                ws[f"G{linha}"] = st.session_state.get(
+                    f"obs_pesado_{i}",
+                    ""
+                )
+
+                linha += 1
 
             nome_arquivo = f'{st.session_state["dados_obra"]}.xlsx'
             wb.save(nome_arquivo)
