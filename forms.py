@@ -119,7 +119,6 @@ if st.session_state.pagina == "cabecalho":
         key="data"
 )
 
-
     obra = st.text_input(
         "Código da obra",
         key = "obra"
@@ -321,6 +320,7 @@ elif st.session_state.pagina == "veiculos":
         min_value=0,
         step=1,
         value=0
+        key="quantidade_veiculos_leves"
     )
 
     st.divider()
@@ -427,6 +427,7 @@ elif st.session_state.pagina == "veiculos_pesados":
         min_value=0,
         step=1,
         value=0
+        key="quantidade_veiculos_pesados"
     )
 
     st.divider()
@@ -591,6 +592,12 @@ elif st.session_state.pagina == "contratacoes":
 
             wb = load_workbook("organograma_modelo.xlsx")
             ws = wb.active
+
+            st.write("DEBUG")
+            st.write("quantidade equipes:", st.session_state.get("quantidade_equipes"))
+            st.write("funcao 0:", st.session_state.get("funcao_0"))
+            st.write("cargo 0:", st.session_state.get("cargo_0_0"))
+            st.write("nome 0:", st.session_state.get("nome_0_0"))
 
             ws["G3"] = st.session_state["dados_obra"]
             ws["E3"] = st.session_state["dados_data"]
