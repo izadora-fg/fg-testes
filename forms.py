@@ -541,9 +541,7 @@ elif st.session_state.pagina == "contratacoes":
             ws["F4"] = st.session_state["dados_responsavel"]
             ws["F5"] = st.session_state["dados_cargo"]
 
-            nome_arquivo = f'{st.session_state["obra"]}.xlsx'
+            nome_arquivo = f'{st.session_state["dados_obra"]}.xlsx'
             wb.save(nome_arquivo)
 
             st.success("Formulário preenchido com sucesso!")
-
-            
