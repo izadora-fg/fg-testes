@@ -134,6 +134,13 @@ if st.session_state.pagina == "cabecalho":
 
         else:
 
+            st.session_state["dados_obra"] = obra
+            st.session_state["dados_data"] = data
+            st.session_state["dados_cidade"] = cidade
+            st.session_state["dados_estado"] = estado
+            st.session_state["dados_responsavel"] = responsavel
+            st.session_state["dados_cargo"] = cargo
+
             st.session_state.pagina = "equipes"
 
             st.rerun()
@@ -528,15 +535,15 @@ elif st.session_state.pagina == "contratacoes":
             wb = load_workbook("organograma_modelo.xlsx")
             ws = wb.active
 
-            ws["G3"] = st.session_state["obra"]
-            ws["E3"] = st.session_state["data"]
-            ws["I3"] = st.session_state["cidade"]
-            ws["F4"] = st.session_state["responsavel"]
-            ws["F5"] = cargo
+            ws["G3"] = st.session_state["dados_obra"]
+            ws["E3"] = st.session_state["dados_data"]
+            ws["I3"] = st.session_state["dados_cidade"]
+            ws["F4"] = st.session_state["dados_responsavel"]
+            ws["F5"] = st.session_state["dados_cargo"]
 
             nome_arquivo = f'{st.session_state["obra"]}.xlsx'
             wb.save(nome_arquivo)
 
-            st.success("Formulário preenchido com sucesso! Modelo carregado")
+            st.success("Formulário preenchido com sucesso!")
 
             
