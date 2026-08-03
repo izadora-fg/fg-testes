@@ -319,7 +319,7 @@ elif st.session_state.pagina == "veiculos":
         "Quantos veículos leves existem?",
         min_value=0,
         step=1,
-        value=0
+        value=0,
         key="quantidade_veiculos_leves"
     )
 
