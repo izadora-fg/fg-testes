@@ -631,29 +631,20 @@ elif st.session_state.pagina == "contratacoes":
 
             linha = 9
 
-            quantidade_equipes = st.session_state.get("quantidade_equipes", 0)
+            dados_equipes = st.session_state["dados_equipes"]
 
-            ws["E7"] = quantidade_equipes
+            ws["E7"] = dados_equipes["quantidade_equipes"]
 
-            for i in range(quantidade_equipes):
+            for equipe in dados_equipes["equipes"]:
 
-                ws[f"C{linha}"] = st.session_state.get(f"funcao_{i}", "")
+                ws[f"C{linha}"] = equipe["funcao"]
 
                 linha += 1
 
-                quantidade_funcionarios = st.session_state.get(f"qtd_func_{i}", 0)
+                for funcionario in equipe["funcionarios"]:
 
-                for funcionario in range(quantidade_funcionarios):
-
-                    ws[f"C{linha}"] = st.session_state.get(
-                        f"cargo_{i}_{funcionario}",
-                        ""
-                    )
-
-                    ws[f"E{linha}"] = st.session_state.get(
-                        f"nome_{i}_{funcionario}",
-                        ""
-                    )
+                    ws[f"C{linha}"] = funcionario["cargo"]
+                    ws[f"E{linha}"] = funcionario["nome"]
 
                     linha += 1
 
