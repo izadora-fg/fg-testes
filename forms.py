@@ -1,6 +1,7 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from openpyxl import load_workbook
+from copy import copy
 
 import streamlit as st
 import pandas as pd
@@ -411,7 +412,7 @@ elif st.session_state.pagina == "veiculos":
 
         erros = []
 
-        for i in range(quantidade_veiculos):
+        for i in range(st.session_state["quantidade_veiculos_leves"]):
 
             if st.session_state[f"tipo_leve_{i}"].strip() == "":
                 erros.append(f"Informe o tipo do Veículo {i+1}.")
@@ -436,8 +437,24 @@ elif st.session_state.pagina == "veiculos":
 
         else:
 
-            st.session_state.pagina = "veiculos_pesados"
-            st.rerun()
+            st.session_state["dados_veiculos_leves"] = {
+            "quantidade": st.session_state["quantidade_veiculos_leves"],
+            "veiculos": []
+        }
+
+            for i in range(st.session_state["quantidade_veiculos_leves"]):
+
+                st.session_state["dados_veiculos_leves"]["veiculos"].append({
+                    "tipo": st.session_state.get(f"tipo_leve_{i}", ""),
+                    "placa": st.session_state.get(f"placa_leve_{i}", ""),
+                    "responsavel": st.session_state.get(f"responsavel_leve_{i}", ""),
+                    "cargo_setor": st.session_state.get(f"cargo_setor_leve_{i}", ""),
+                    "observacao": st.session_state.get(f"obs_leve_{i}", ""),
+                    "liberado": st.session_state.get(f"liberado_leve_{i}", "")
+                })
+
+        st.session_state.pagina = "veiculos_pesados"
+        st.rerun()
 
 elif st.session_state.pagina == "veiculos_pesados":
 
@@ -455,7 +472,7 @@ elif st.session_state.pagina == "veiculos_pesados":
 
     st.divider()
 
-    for i in range(quantidade_veiculos):
+    for i in range(st.session_state["quantidade_veiculos_pesados"]):
 
         with st.container(border=True):
 
@@ -502,6 +519,22 @@ elif st.session_state.pagina == "veiculos_pesados":
             st.rerun()
 
     with col2:
+        
+        st.session_state["dados_veiculos_pesados"] = {
+            "quantidade": st.session_state["quantidade_veiculos_pesados"],
+            "veiculos": []
+    }
+
+        for i in range(st.session_state["quantidade_veiculos_pesados"]):
+
+            st.session_state["dados_veiculos_pesados"]["veiculos"].append({
+                "tipo": st.session_state.get(f"tipo_pesado_{i}", ""),
+                "placa": st.session_state.get(f"placa_pesado_{i}", ""),
+                "responsavel": st.session_state.get(f"responsavel_pesado_{i}", ""),
+                "proprietario": st.session_state.get(f"proprietario_pesado_{i}", ""),
+                "observacao": st.session_state.get(f"obs_pesado_{i}", "")
+        })
+
         if st.button("Próxima seção ➜"):
             st.session_state.pagina = "contratacoes"
             st.rerun()
@@ -613,11 +646,30 @@ elif st.session_state.pagina == "contratacoes":
     with col2:
         if st.button("Finalizar"):
 
+            st.session_state["dados_contratacoes"] = {
+            "funcionarios": [],
+            "equipamentos": []
+        }
+
+            for i in range(quantidade_cargos):
+
+                st.session_state["dados_contratacoes"]["funcionarios"].append({
+                    "cargo": st.session_state.get(f"cargo_contratado_{i}", ""),
+                    "quantidade": st.session_state.get(f"qtd_cargo_{i}", 0),
+                    "observacao": st.session_state.get(f"obs_funcionario_{i}", "")
+                })
+
+
+            for i in range(quantidade_equipamentos):
+
+                st.session_state["dados_contratacoes"]["equipamentos"].append({
+                    "equipamento": st.session_state.get(f"equipamento_{i}", ""),
+                    "quantidade": st.session_state.get(f"qtd_equipamento_{i}", 0),
+                    "observacao": st.session_state.get(f"obs_equipamento_{i}", "")
+                })
+
             wb = load_workbook("organograma_modelo.xlsx")
             ws = wb.active
-
-            st.write("DEBUG")
-            st.write(st.session_state.get("dados_equipes"))
 
             ws["G3"] = st.session_state["dados_obra"]
             ws["E3"] = st.session_state["dados_data"]
@@ -635,6 +687,29 @@ elif st.session_state.pagina == "contratacoes":
 
             ws["E7"] = dados_equipes["quantidade_equipes"]
 
+
+            # quantidade de linhas necessárias para equipes
+            linhas_necessarias = 0
+
+            for equipe in dados_equipes["equipes"]:
+                linhas_necessarias += 1
+                linhas_necessarias += len(equipe["funcionarios"])
+
+
+            # o modelo já possui uma linha de funcionário
+            linhas_extras = linhas_necessarias - 1
+
+
+            if linhas_extras > 0:
+
+                ws.insert_rows(
+                    idx=12,
+                    amount=linhas_extras
+                )
+
+
+            # preencher equipes
+
             for equipe in dados_equipes["equipes"]:
 
                 ws[f"C{linha}"] = equipe["funcao"]
@@ -644,102 +719,213 @@ elif st.session_state.pagina == "contratacoes":
                 for funcionario in equipe["funcionarios"]:
 
                     ws[f"C{linha}"] = funcionario["cargo"]
+
                     ws[f"E{linha}"] = funcionario["nome"]
 
                     linha += 1
-
 
             # ======================================
             # VEÍCULOS LEVES
             # ======================================
 
-            linha += 1
+            dados_veiculos_leves = st.session_state["dados_veiculos_leves"]
 
-            quantidade_veiculos_leves = st.session_state.get(
-                "quantidade_veiculos_leves",
-                0
-            )
+            quantidade_veiculos_leves = dados_veiculos_leves["quantidade"]
 
             ws[f"E{linha}"] = quantidade_veiculos_leves
+
+
+            # cria linhas extras para veículos
+            linhas_extras = quantidade_veiculos_leves - 1
+
+            if linhas_extras > 0:
+
+                ws.insert_rows(
+                    idx=linha + 4,
+                    amount=linhas_extras
+                )
+
 
             linha += 3
 
 
-            for i in range(quantidade_veiculos_leves):
+            for veiculo in dados_veiculos_leves["veiculos"]:
 
-                ws[f"C{linha}"] = st.session_state.get(
-                    f"tipo_leve_{i}",
-                    ""
+                ws[f"C{linha}"] = veiculo["tipo"]
+
+                ws[f"D{linha}"] = veiculo["placa"]
+
+                ws[f"E{linha}"] = veiculo["responsavel"]
+
+                ws[f"F{linha}"] = veiculo["cargo_setor"]
+
+                ws[f"G{linha}"] = veiculo["observacao"]
+
+                ws[f"I{linha}"] = veiculo["liberado"]
+
+                linha += 1
+
+            # ======================================
+            # VEÍCULOS PESADOS
+            # ======================================
+
+            dados_veiculos_pesados = st.session_state["dados_veiculos_pesados"]
+
+            quantidade_veiculos_pesados = dados_veiculos_pesados["quantidade"]
+
+            ws[f"E{linha}"] = quantidade_veiculos_pesados
+
+
+            linhas_extras = quantidade_veiculos_pesados - 1
+
+            if linhas_extras > 0:
+
+                ws.insert_rows(
+                    idx=linha + 4,
+                    amount=linhas_extras
                 )
 
-                ws[f"D{linha}"] = st.session_state.get(
-                    f"placa_leve_{i}",
+            linha += 3
+
+            for veiculo in dados_veiculos_pesados["veiculos"]:
+
+                ws[f"C{linha}"] = veiculo["tipo"]
+
+                ws[f"D{linha}"] = veiculo["placa"]
+
+                ws[f"E{linha}"] = veiculo["responsavel"]
+
+                ws[f"F{linha}"] = veiculo["proprietario"]
+
+                ws[f"G{linha}"] = veiculo["observacao"]
+
+                linha += 1
+
+            # ======================================
+            # CONTRATAÇÕES
+            # ======================================
+
+            dados_contratacoes = st.session_state["dados_contratacoes"]
+
+
+            # ---------- Funcionários ----------
+
+            quantidade_cargos = len(
+                dados_contratacoes["funcionarios"]
+            )
+
+            ws[f"E{linha}"] = quantidade_cargos
+
+
+            linhas_extras = quantidade_cargos - 1
+
+            if linhas_extras > 0:
+
+                ws.insert_rows(
+                    idx=linha + 4,
+                    amount=linhas_extras
+                )
+
+            linha += 3
+
+
+            for funcionario in dados_contratacoes["funcionarios"]:
+
+                ws[f"C{linha}"] = funcionario["cargo"]
+
+                ws[f"E{linha}"] = funcionario["quantidade"]
+
+                ws[f"G{linha}"] = funcionario["observacao"]
+
+                linha += 1
+
+
+            # ---------- Equipamentos ----------
+
+            quantidade_equipamentos = len(
+                dados_contratacoes["equipamentos"]
+            )
+
+            ws[f"E{linha}"] = quantidade_equipamentos
+
+
+            linhas_extras = quantidade_equipamentos - 1
+
+            if linhas_extras > 0:
+
+                ws.insert_rows(
+                    idx=linha + 4,
+                    amount=linhas_extras
+                )
+
+            linha += 3
+
+
+            for equipamento in dados_contratacoes["equipamentos"]:
+
+                ws[f"C{linha}"] = equipamento["equipamento"]
+
+                ws[f"E{linha}"] = equipamento["quantidade"]
+
+                ws[f"G{linha}"] = equipamento["observacao"]
+
+                linha += 1
+
+            quantidade_cargos = st.session_state.get(
+                "quantidade_cargos",
+                0
+            )
+
+            ws[f"E{linha}"] = quantidade_cargos
+
+            linha += 3
+
+
+            for i in range(quantidade_cargos):
+
+                ws[f"C{linha}"] = st.session_state.get(
+                    f"cargo_contratado_{i}",
                     ""
                 )
 
                 ws[f"E{linha}"] = st.session_state.get(
-                    f"responsavel_leve_{i}",
-                    ""
-                )
-
-                ws[f"F{linha}"] = st.session_state.get(
-                    f"cargo_setor_leve_{i}",
+                    f"qtd_cargo_{i}",
                     ""
                 )
 
                 ws[f"G{linha}"] = st.session_state.get(
-                    f"obs_leve_{i}",
-                    ""
-                )
-
-                ws[f"I{linha}"] = st.session_state.get(
-                    f"liberado_leve_{i}",
+                    f"obs_funcionario_{i}",
                     ""
                 )
 
                 linha += 1
 
 
-            # ======================================
-            # VEÍCULOS PESADOS
-            # ======================================
 
-            linha += 1
-
-            quantidade_veiculos_pesados = st.session_state.get(
-                "quantidade_veiculos_pesados",
+            quantidade_equipamentos = st.session_state.get(
+                "quantidade_equipamentos",
                 0
             )
 
-            ws[f"E{linha}"] = quantidade_veiculos_pesados
+            ws[f"E{linha}"] = quantidade_equipamentos
 
             linha += 3
 
 
-            for i in range(quantidade_veiculos_pesados):
+            for i in range(quantidade_equipamentos):
 
                 ws[f"C{linha}"] = st.session_state.get(
-                    f"tipo_pesado_{i}",
-                    ""
-                )
-
-                ws[f"D{linha}"] = st.session_state.get(
-                    f"placa_pesado_{i}",
+                    f"equipamento_{i}",
                     ""
                 )
 
                 ws[f"E{linha}"] = st.session_state.get(
-                    f"responsavel_pesado_{i}",
-                    ""
-                )
-
-                ws[f"F{linha}"] = st.session_state.get(
-                    f"proprietario_pesado_{i}",
+                    f"qtd_equipamento_{i}",
                     ""
                 )
 
                 ws[f"G{linha}"] = st.session_state.get(
-                    f"obs_pesado_{i}",
+                    f"obs_equipamento_{i}",
                     ""
                 )
 
