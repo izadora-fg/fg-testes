@@ -306,6 +306,29 @@ elif st.session_state.pagina == "equipes":
 
         else:
 
+            st.session_state["dados_equipes"] = {
+                "quantidade_equipes": quantidade_equipes,
+                "equipes": []
+            }
+
+            for i in range(quantidade_equipes):
+
+                equipe = {
+                    "funcao": st.session_state[f"funcao_{i}"],
+                    "funcionarios": []
+                }
+
+                qtd = st.session_state[f"qtd_func_{i}"]
+
+                for funcionario in range(qtd):
+
+                    equipe["funcionarios"].append({
+                        "cargo": st.session_state[f"cargo_{i}_{funcionario}"],
+                        "nome": st.session_state[f"nome_{i}_{funcionario}"]
+                    })
+
+                st.session_state["dados_equipes"]["equipes"].append(equipe)
+
             st.session_state.pagina = "veiculos"
             st.rerun()
 
@@ -594,10 +617,7 @@ elif st.session_state.pagina == "contratacoes":
             ws = wb.active
 
             st.write("DEBUG")
-            st.write("quantidade equipes:", st.session_state.get("quantidade_equipes"))
-            st.write("funcao 0:", st.session_state.get("funcao_0"))
-            st.write("cargo 0:", st.session_state.get("cargo_0_0"))
-            st.write("nome 0:", st.session_state.get("nome_0_0"))
+            st.write(st.session_state.get("dados_equipes"))
 
             ws["G3"] = st.session_state["dados_obra"]
             ws["E3"] = st.session_state["dados_data"]
